@@ -1,4 +1,4 @@
-import {createSignal, Component, JSX, createEffect, on, Show, For} from "solid-js";
+import {createSignal, Component, JSX, For} from "solid-js";
 import { BsSortDownAlt } from "solid-icons/bs";
 import { BsSortDown } from "solid-icons/bs";
 import styles from "./Search.module.scss";
@@ -11,9 +11,6 @@ type TProps = {
 export const Search: Component<TProps> = (props) => {
   const [value, setValue] = createSignal('')
   const [sortVariant, setSortVariant] = createSignal(true)
-  createEffect(() => {
-    sortedItems()
-  })
   const sortedItems = () => {
     const sorted = [...props.items].sort((a, b) =>
         sortVariant() ? a.localeCompare(b) : b.localeCompare(a)
