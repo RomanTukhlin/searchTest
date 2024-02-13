@@ -10,38 +10,42 @@ type TProps = {
 }
 export const Search: Component<TProps> = (props) => {
   const [value, setValue] = createSignal('')
-  const [filterItems, setFilterItems] = createSignal(props.items)
   const [sortVariant, setSortVariant] = createSignal(true)
-
-
   createEffect(() => {
-    setFilterItems(() => searchFilter(value(), props.items))
-    setFilterItems((current) => sortItems( sortVariant() ,current))
+    sortedItems()
   })
-  const sortItems = (rev: boolean, items: Array<string>) => {
-    return [...items].sort((a, b) => (rev ? a.localeCompare(b) : b.localeCompare(a)))
+  const sortedItems = () => {
+    const sorted = [...props.items].sort((a, b) =>
+        sortVariant() ? a.localeCompare(b) : b.localeCompare(a)
+    )
+    return sorted.filter((item) => item.toLowerCase().includes(value().toLowerCase()));
   }
-  const searchFilter = (value: string, items: Array<string>) => {
-    return items.filter((item) => item.toLowerCase().includes(value))
+  const handleSortToggle = () => {
+    setSortVariant(!sortVariant())
   }
-  return <div class={styles.container}>
-    <div class={styles.inputContainer}>
-      <input type="search" class={styles.input}
-             placeholder={props.placeholder}
-             onInput={(e) => setValue(e.target.value.toLowerCase())}
-             value={value()}
-      />
-      <button
-          type={'button'}
-          class={styles.button}
-          onClick={() => setSortVariant((current) => !current)}>
-        {sortVariant() ? <BsSortDownAlt size={24}/> : <BsSortDown size={24}/>}
-      </button>
-    </div>
-    <div class={styles.list}>
-      <Show when={filterItems()}>
-        <For each={filterItems()}>{item => <div class={styles.item}>{item}</div>}</For>
-      </Show>
-    </div>
-  </div>;
+  const handleSearchChange:JSX.EventHandlerUnion<HTMLInputElement, InputEvent> = (e) => {
+    setValue(e.currentTarget.value)
+  }
+
+  return (
+      <div class={styles.container}>
+        <div class={styles.inputContainer}>
+          <input
+              type="search"
+              class={styles.input}
+              placeholder={props.placeholder}
+              value={value()}
+              onInput={handleSearchChange}
+          />
+          <button type="button" class={styles.button} onClick={handleSortToggle}>
+            {sortVariant() ? <BsSortDownAlt size={24} /> : <BsSortDown size={24} />}
+          </button>
+        </div>
+        <div class={styles.list}>
+          <For each={sortedItems()}>
+            {(item) => <div class={styles.item}>{item}</div>}
+          </For>
+        </div>
+      </div>
+  );
 };
