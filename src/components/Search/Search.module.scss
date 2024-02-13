@@ -5,6 +5,11 @@
   box-shadow: 1px 1px 5px #B8B0B0;
   padding: 20px;
 }
+.inputContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .input {
   background: transparent;
   min-width: 350px;
